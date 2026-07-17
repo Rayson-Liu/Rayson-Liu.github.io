@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pink Music - 基于B站的跨平台桌面音乐播放器</title>
+    <link rel="icon" type="image/png" href="https://gitee.com/Rayson-Liu/pink-music-app/blob/main/pink.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b9d;
+            --primary-dark: #ff4785;
+            --secondary: #c44569;
+            --bg-light: #fff5f8;
+            --bg-dark: #1a1a2e;
+            --text-light: #333;
+            --text-dark: #f0f0f0;
+            --card-light: rgba(255, 255, 255, 0.8);
+            --card-dark: rgba(30, 30, 50, 0.8);
+            --border-light: rgba(255, 107, 157, 0.2);
+            --border-dark: rgba(255, 107, 157, 0.3);
+            --modal-overlay: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #fff5f8 0%, #ffe0ec 50%, #f3e8ff 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #2d1b4e 100%);
+            color: var(--text-dark);
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .navbar {
+            background: rgba(26, 26, 46, 0.7);
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-img {
+            height: 36px;
+            width: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 107, 157, 0.1);
+        }
+
+        .nav-download-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-download-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+        }
+
+        /* Hero 区域 */
+        .hero {
+            padding: 10rem 2rem 6rem;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+        }
+
+        body.dark .hero-subtitle {
+            color: #aaa;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--card-light);
+            color: var(--primary);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+        }
+
+        body.dark .btn-secondary {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 107, 157, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 107, 157, 0.15);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        body.dark .badge {
+            background: rgba(255, 107, 157, 0.2);
+        }
+
+        /* 通用板块样式 */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            text-align: center;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        body.dark .section-desc {
+            color: #aaa;
+        }
+
+        /* 功能特性 */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--card-light);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .feature-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        body.dark .feature-card p {
+            color: #bbb;
+        }
+
+        /* 技术栈 */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .tech-item {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark .tech-item {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .tech-item:hover {
+            border-color: var(--primary);
+        }
+
+        .tech-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .tech-version {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .tech-version {
+            color: #999;
+        }
+
+        .tech-desc {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        body.dark .tech-desc {
+            color: #aaa;
+        }
+
+        /* 使用指南 */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .guide-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--card-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark .guide-item {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .guide-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .guide-content h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .guide-content p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        body.dark .guide-content p {
+            color: #aaa;
+        }
+
+        /* 下载区域 */
+        .download-section {
+            text-align: center;
+        }
+
+        .download-paths {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .path-card {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            word-break: break-all;
+        }
+
+        body.dark .path-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .path-label {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-family: inherit;
+        }
+
+        /* 开源仓库 */
+        .repo-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .repo-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            min-width: 280px;
+        }
+
+        body.dark .repo-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .repo-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.15);
+        }
+
+        .repo-icon {
+            font-size: 2rem;
+        }
+
+        .repo-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .repo-info span {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        body.dark .repo-info span {
+            color: #999;
+        }
+
+        /* 法律声明 */
+        .legal-notice {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        body.dark .legal-notice {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+            color: #aaa;
+        }
+
+        .legal-notice h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .legal-notice ul {
+            list-style-position: inside;
+            line-height: 1.8;
+        }
+
+        /* 下载弹窗模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--modal-overlay);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            overflow: hidden;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        body.dark .modal-content {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark .modal-header {
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #888;
+            line-height: 1;
+            transition: color 0.2s ease;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+            background: rgba(255, 107, 157, 0.1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .download-option {
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: rgba(255, 107, 157, 0.05);
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark .download-option {
+            background: rgba(255, 107, 157, 0.08);
+            border: 1px solid var(--border-dark);
+        }
+
+        .download-option h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .download-option p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .download-option p {
+            color: #aaa;
+        }
+
+        .modal-footer {
+            padding: 1rem 2rem 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        body.dark .modal-footer {
+            color: #999;
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border-light);
+            margin-top: 3rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        body.dark footer {
+            border-top: 1px solid var(--border-dark);
+            color: #999;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .nav-links li:not(:last-child):not(:nth-last-child(2)) {
+                display: none;
+            }
+            
+            .hero {
+                padding: 8rem 1.5rem 4rem;
+            }
+            
+            .section {
+                padding: 3rem 1.5rem;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .nav-download-btn span {
+                display: none;
+            }
+
+            .nav-download-btn {
+                padding: 0.5rem 0.7rem;
+            }
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="https://raw.githubusercontent.com/Rayson-Liu/pink-music-app/main/pink.png" alt="Pink Music Logo" class="logo-img">
+            <span>Pink Music</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">功能</a></li>
+            <li><a href="#tech">技术栈</a></li>
+            <li><a href="#guide">使用指南</a></li>
+            <li><button class="nav-download-btn" id="downloadBtn">⬇️ <span>下载</span></button></li>
+            <li>
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    🌙
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <span class="badge">✨ <span class="current-version">v2.1.0</span> 最新版本已发布</span>
+        <h1>你的桌面音乐新选择</h1>
+        <p class="hero-subtitle">
+            基于哔哩哔哩公开接口打造的跨平台桌面音乐播放器，高品质音频播放、丰富的歌单管理、轻盈美观的界面，给你纯粹的音乐体验
+        </p>
+        <div class="hero-buttons">
+            <button class="btn btn-primary" id="heroDownloadBtn">
+                🚀 立即下载
+            </button>
+            <a href="https://github.com/Rayson-Liu/pink-music-app" target="_blank" class="btn btn-secondary">
+                ⭐ GitHub 仓库
+            </a>
+        </div>
+    </section>
+
+    <!-- 功能特性 -->
+    <section class="section" id="features">
+        <h2 class="section-title">核心功能</h2>
+        <p class="section-desc">专为音乐爱好者设计的丰富功能，覆盖播放、管理、个性化全场景</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎼</div>
+                <h3>B站账号同步</h3>
+                <p>支持登录Bilibili账号，一键获取你的收藏夹内容，无缝同步你的音乐收藏</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎧</div>
+                <h3>高品质播放</h3>
+                <p>优先拉取更高码率音频流，享受清晰饱满的音质，带来沉浸式聆听体验</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔥</div>
+                <h3>音频下载</h3>
+                <p>支持一键下载音频文件，可自定义音质设置，离线也能随时收听喜爱的音乐</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🧩</div>
+                <h3>精致界面</h3>
+                <p>轻量现代的界面设计，内置浅色与深色主题，搭配毛玻璃效果与流畅动画</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💿</div>
+                <h3>系统托盘</h3>
+                <p>支持最小化到系统托盘，后台便捷控制播放，不占用任务栏空间</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>多主题配色</h3>
+                <p>提供粉色、紫色、蓝色、绿色、橙色五种主题颜色，随心切换个性界面</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📂</div>
+                <h3>本地歌单管理</h3>
+                <p>支持创建、导入、导出本地歌单，JSON格式通用，轻松管理你的音乐库</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📺</div>
+                <h3>分P切换支持</h3>
+                <p>完美支持多P视频，可便捷查看并切换分P内容，合集音乐轻松播放</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术栈 -->
+    <section class="section" id="tech">
+        <h2 class="section-title">技术栈</h2>
+        <p class="section-desc">采用成熟的现代前端技术，保证跨平台兼容性与流畅体验</p>
+        
+        <div class="tech-stack">
+            <div class="tech-item">
+                <div class="tech-name">Electron</div>
+                <div class="tech-version">^20.0.0</div>
+                <div class="tech-desc">桌面应用框架</div>
+            </div>
+            
+            <div class="tech-item">
+                <div class="tech-name">Vue 3</div>
+                <div class="tech-version">^3.5.32</div>
+                <div class="tech-desc">前端框架</div>
+            </div>
+            
+            <div class="tech-item">
+                <div class="tech-name">Vite</div>
+                <div class="tech-version">^8.0.4</div>
+                <div class="tech-desc">构建工具</div>
+            </div>
+            
+            <div class="tech-item">
+                <div class="tech-name">Axios</div>
+                <div class="tech-version">^1.15.2</div>
+                <div class="tech-desc">网络请求</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使用指南 -->
+    <section class="section" id="guide">
+        <h2 class="section-title">快速上手</h2>
+        <p class="section-desc">简单几步，开启你的音乐之旅</p>
+        
+        <div class="guide-grid">
+            <div class="guide-item">
+                <div class="guide-number">1</div>
+                <div class="guide-content">
+                    <h4>搜索与播放</h4>
+                    <p>在搜索框输入关键词，回车或点击搜索，点击音乐卡片即可直接播放</p>
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-number">2</div>
+                <div class="guide-content">
+                    <h4>分P切换</h4>
+                    <p>多P视频点击右侧列表按钮，查看所有分P并自由切换播放内容</p>
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-number">3</div>
+                <div class="guide-content">
+                    <h4>歌单管理</h4>
+                    <p>侧边栏创建歌单，支持导入导出JSON格式文件，轻松备份与分享</p>
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-number">4</div>
+                <div class="guide-content">
+                    <h4>下载音频</h4>
+                    <p>音乐卡片或歌单中点击下载按钮，可在设置中调整下载音质</p>
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-number">5</div>
+                <div class="guide-content">
+                    <h4>界面定制</h4>
+                    <p>右上角主题按钮切换颜色主题，支持深色/浅色模式自由切换</p>
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-number">6</div>
+                <div class="guide-content">
+                    <h4>后台播放</h4>
+                    <p>最小化窗口自动隐藏到系统托盘，不影响工作同时享受音乐</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 安装与运行 -->
+    <section class="section download-section" id="download">
+        <h2 class="section-title">源码运行与构建</h2>
+        <p class="section-desc">支持 macOS、Windows、Linux 全平台运行</p>
+        
+        <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
+            <div class="path-label">📦 克隆项目</div>
+            <code>git clone https://github.com/Rayson-Liu/pink-music-app.git</code>
+        </div>
+        
+        <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
+            <div class="path-label">🔧 安装依赖</div>
+            <code>npm install</code>
+        </div>
+        
+        <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
+            <div class="path-label">🚀 启动开发服务</div>
+            <code>npm run dev</code>
+        </div>
+        
+        <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
+            <div class="path-label">🎵 启动 Electron 客户端</div>
+            <code>npm run electron:dev</code>
+        </div>
+        
+        <h3 style="margin: 2.5rem 0 1rem;">构建打包</h3>
+        <div class="download-paths" style="max-width: 800px; margin: 0 auto;">
+            <div class="path-card">
+                <div class="path-label">🍎 macOS</div>
+                <code>npm run electron:build</code>
+            </div>
+            <div class="path-card">
+                <div class="path-label">🪟 Windows</div>
+                <code>npm run electron:build -- --win</code>
+            </div>
+        </div>
+        
+        <h3 style="margin: 2.5rem 0 1rem;">默认下载目录</h3>
+        <div class="download-paths" style="max-width: 800px; margin: 0 auto;">
+            <div class="path-card">
+                <div class="path-label">🍎 macOS</div>
+                <code>~/Library/Application Support/Pink Music/downloads/</code>
+            </div>
+            <div class="path-card">
+                <div class="path-label">🪟 Windows</div>
+                <code>%APPDATA%\Pink Music\downloads\</code>
+            </div>
+            <div class="path-card">
+                <div class="path-label">🐧 Linux</div>
+                <code>~/.config/Pink Music/downloads/</code>
+            </div>
+        </div>
+    </section>
+
+    <!-- 开源仓库 -->
+    <section class="section">
+        <h2 class="section-title">开源仓库</h2>
+        <p class="section-desc">项目完全开源，欢迎 Star 与贡献</p>
+        
+        <div class="repo-links">
+            <a href="https://github.com/Rayson-Liu/pink-music-app" target="_blank" class="repo-card">
+                <div class="repo-icon">🐙</div>
+                <div class="repo-info">
+                    <h4>GitHub</h4>
+                    <span>Rayson-Liu/pink-music-app</span>
+                </div>
+            </a>
+            
+            <a href="https://gitee.com/Rayson-Liu/pink-music-app" target="_blank" class="repo-card">
+                <div class="repo-icon">🏠</div>
+                <div class="repo-info">
+                    <h4>Gitee</h4>
+                    <span>Rayson/pink-music-app</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- 法律声明 -->
+        <div class="legal-notice">
+            <h4>⚖️ 法律声明与使用限制</h4>
+            <ul>
+                <li>本项目仅供学习与研究使用，禁止任何形式的商业用途（包括但不限于销售、收费服务、广告变现、商业集成等）</li>
+                <li>本项目与 Bilibili 无任何官方关联或背书，不使用其商标与标识；涉及的名称与商标归其权利人所有</li>
+                <li>数据来源于用户调用的公开接口与个人账户授权；使用时需遵守 Bilibili 的《用户协议》《社区规则》及相关法律法规</li>
+                <li>禁止绕过登录/会员权限、DRM/加密措施，或进行批量爬取、恶意抓取等违反平台规则的行为</li>
+                <li>本项目以 PolyForm Noncommercial License 1.0.0（非商业许可）发布</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 下载弹窗 -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>下载 Pink Music</h3>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="download-option">
+                    <h4>🌍 全球站点 · GitHub</h4>
+                    <p>最新正式版 <span class="current-version">v2.1.0</span> · 海外用户推荐</p>
+                    <a href="https://github.com/Rayson-Liu/pink-music-app/releases/latest" target="_blank" class="btn btn-primary btn-full">
+                        前往 GitHub 下载
+                    </a>
+                </div>
+                <div class="download-option">
+                    <h4>🇨🇳 国内站点 · Gitee</h4>
+                    <p>最新正式版 <span class="current-version">v2.1.0</span> · 国内用户高速访问</p>
+                    <a href="https://gitee.com/Rayson-Liu/pink-music-app/releases" target="_blank" class="btn btn-secondary btn-full">
+                        前往 Gitee 下载
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                支持 macOS / Windows / Linux 全平台安装包
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>💗 Pink Music © 2026 | 基于 <a href="https://github.com/Rayson-Liu/pink-music-app" target="_blank">PolyForm Noncommercial License</a> 开源</p>
+        <p style="margin-top: 0.5rem;">非官方项目，与哔哩哔哩无任何官方关联</p>
+    </footer>
+
+    <script>
+        // 动态获取最新版本号
+        const DEFAULT_VERSION = 'v2.1.0';
+        const GITHUB_REPO = 'Rayson-Liu/pink-music-app';
+
+        async function fetchLatestVersion() {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+                if (!response.ok) throw new Error('请求失败');
+                const data = await response.json();
+                const latestVersion = data.tag_name || DEFAULT_VERSION;
+                // 替换页面所有版本号
+                document.querySelectorAll('.current-version').forEach(el => {
+                    el.textContent = latestVersion;
+                });
+            } catch (err) {
+                // 请求失败保留默认版本，不影响页面使用
+                console.warn('获取最新版本号失败，使用默认版本', err);
+            }
+        }
+
+        // 页面加载时拉取版本号
+        fetchLatestVersion();
+
+        // 主题切换功能
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // 检查本地存储的主题偏好
+        const savedTheme = localStorage.getItem('pink-music-theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('pink-music-theme', isDark ? 'dark' : 'light');
+        });
+
+        // 下载弹窗控制
+        const downloadBtn = document.getElementById('downloadBtn');
+        const heroDownloadBtn = document.getElementById('heroDownloadBtn');
+        const downloadModal = document.getElementById('downloadModal');
+        const closeModal = document.getElementById('closeModal');
+
+        function openModal() {
+            downloadModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModalFunc() {
+            downloadModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        downloadBtn.addEventListener('click', openModal);
+        heroDownloadBtn.addEventListener('click', openModal);
+        closeModal.addEventListener('click', closeModalFunc);
+
+        // 点击遮罩关闭弹窗
+        downloadModal.addEventListener('click', (e) => {
+            if (e.target === downloadModal) {
+                closeModalFunc();
+            }
+        });
+
+        // ESC键关闭弹窗
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && downloadModal.classList.contains('active')) {
+                closeModalFunc();
+            }
+        });
+
+        // 导航栏滚动效果
+        let lastScroll = 0;
+        const navbar = document.querySelector('.navbar');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.05)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
