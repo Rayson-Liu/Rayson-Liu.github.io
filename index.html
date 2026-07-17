@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pink Music - 基于B站的跨平台桌面音乐播放器</title>
-    <link rel="icon" type="image/png" href="https://gitee.com/Rayson-Liu/pink-music-app/blob/main/pink.png">
+    <link rel="icon" type="image/png" href="https://gitee.com/Rayson-Liu/pink-music-app/raw/main/pink.png">
     <style>
         * {
             margin: 0;
@@ -20,11 +20,11 @@
             --bg-dark: #1a1a2e;
             --text-light: #333;
             --text-dark: #f0f0f0;
-            --card-light: rgba(255, 255, 255, 0.8);
-            --card-dark: rgba(30, 30, 50, 0.8);
-            --border-light: rgba(255, 107, 157, 0.2);
-            --border-dark: rgba(255, 107, 157, 0.3);
-            --modal-overlay: rgba(0, 0, 0, 0.4);
+            --card-light: rgba(255, 255, 255, 0.88);
+            --card-dark: rgba(30, 30, 50, 0.88);
+            --border-light: rgba(255, 107, 157, 0.25);
+            --border-dark: rgba(255, 107, 157, 0.35);
+            --modal-overlay: rgba(0, 0, 0, 0.45);
         }
 
         body {
@@ -41,16 +41,15 @@
             color: var(--text-dark);
         }
 
-        /* 导航栏 */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             padding: 1rem 2rem;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
             border-bottom: 1px solid var(--border-light);
             z-index: 1000;
             display: flex;
@@ -60,7 +59,7 @@
         }
 
         body.dark .navbar {
-            background: rgba(26, 26, 46, 0.7);
+            background: rgba(26, 26, 46, 0.72);
             border-bottom: 1px solid var(--border-dark);
         }
 
@@ -71,6 +70,7 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary);
+            text-decoration: none;
         }
 
         .logo-img {
@@ -78,7 +78,7 @@
             width: 36px;
             border-radius: 8px;
             object-fit: cover;
-            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
+            box-shadow: 0 2px 10px rgba(255, 107, 157, 0.25);
         }
 
         .nav-links {
@@ -130,10 +130,9 @@
 
         .nav-download-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.45);
         }
 
-        /* Hero 区域 */
         .hero {
             padding: 10rem 2rem 6rem;
             text-align: center;
@@ -186,12 +185,12 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.45);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.55);
         }
 
         .btn-secondary {
@@ -229,10 +228,9 @@
         }
 
         body.dark .badge {
-            background: rgba(255, 107, 157, 0.2);
+            background: rgba(255, 107, 157, 0.22);
         }
 
-        /* 通用板块样式 */
         .section {
             padding: 5rem 2rem;
             max-width: 1200px;
@@ -257,7 +255,6 @@
             color: #aaa;
         }
 
-        /* 功能特性 */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -280,7 +277,7 @@
 
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.15);
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.18);
         }
 
         .feature-icon {
@@ -303,7 +300,6 @@
             color: #bbb;
         }
 
-        /* 技术栈 */
         .tech-stack {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -354,7 +350,6 @@
             color: #aaa;
         }
 
-        /* 使用指南 */
         .guide-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -402,7 +397,6 @@
             color: #aaa;
         }
 
-        /* 下载区域 */
         .download-section {
             text-align: center;
         }
@@ -437,7 +431,6 @@
             font-family: inherit;
         }
 
-        /* 开源仓库 */
         .repo-links {
             display: flex;
             gap: 1.5rem;
@@ -468,11 +461,13 @@
         .repo-card:hover {
             transform: translateY(-3px);
             border-color: var(--primary);
-            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.15);
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.18);
         }
 
         .repo-icon {
-            font-size: 2rem;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
         }
 
         .repo-info h4 {
@@ -489,7 +484,6 @@
             color: #999;
         }
 
-        /* 法律声明 */
         .legal-notice {
             background: var(--card-light);
             border: 1px solid var(--border-light);
@@ -517,7 +511,6 @@
             line-height: 1.8;
         }
 
-        /* 下载弹窗模态框 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -551,7 +544,7 @@
             overflow: hidden;
             transform: translateY(20px) scale(0.95);
             transition: all 0.3s ease;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
         }
 
         .modal-overlay.active .modal-content {
@@ -647,7 +640,6 @@
             color: #999;
         }
 
-        /* 页脚 */
         footer {
             text-align: center;
             padding: 3rem 2rem;
@@ -667,21 +659,20 @@
             text-decoration: none;
         }
 
-        /* 响应式 */
         @media (max-width: 768px) {
             .nav-links {
                 gap: 1rem;
                 font-size: 0.9rem;
             }
-            
+
             .nav-links li:not(:last-child):not(:nth-last-child(2)) {
                 display: none;
             }
-            
+
             .hero {
                 padding: 8rem 1.5rem 4rem;
             }
-            
+
             .section {
                 padding: 3rem 1.5rem;
             }
@@ -699,19 +690,17 @@
             }
         }
 
-        /* 平滑滚动 */
         html {
             scroll-behavior: smooth;
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
     <nav class="navbar">
-        <div class="logo">
-            <img src="https://raw.githubusercontent.com/Rayson-Liu/pink-music-app/main/pink.png" alt="Pink Music Logo" class="logo-img">
+        <a href="#" class="logo">
+            <img src="https://gitee.com/Rayson-Liu/pink-music-app/raw/main/pink.png" alt="Pink Music Logo" class="logo-img">
             <span>Pink Music</span>
-        </div>
+        </a>
         <ul class="nav-links">
             <li><a href="#features">功能</a></li>
             <li><a href="#tech">技术栈</a></li>
@@ -725,7 +714,6 @@
         </ul>
     </nav>
 
-    <!-- Hero 区域 -->
     <section class="hero">
         <span class="badge">✨ <span class="current-version">v2.1.0</span> 最新版本已发布</span>
         <h1>你的桌面音乐新选择</h1>
@@ -742,54 +730,53 @@
         </div>
     </section>
 
-    <!-- 功能特性 -->
     <section class="section" id="features">
         <h2 class="section-title">核心功能</h2>
         <p class="section-desc">专为音乐爱好者设计的丰富功能，覆盖播放、管理、个性化全场景</p>
-        
+
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">🎼</div>
                 <h3>B站账号同步</h3>
                 <p>支持登录Bilibili账号，一键获取你的收藏夹内容，无缝同步你的音乐收藏</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">🎧</div>
                 <h3>高品质播放</h3>
                 <p>优先拉取更高码率音频流，享受清晰饱满的音质，带来沉浸式聆听体验</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">🔥</div>
                 <h3>音频下载</h3>
                 <p>支持一键下载音频文件，可自定义音质设置，离线也能随时收听喜爱的音乐</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">🧩</div>
                 <h3>精致界面</h3>
                 <p>轻量现代的界面设计，内置浅色与深色主题，搭配毛玻璃效果与流畅动画</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">💿</div>
                 <h3>系统托盘</h3>
                 <p>支持最小化到系统托盘，后台便捷控制播放，不占用任务栏空间</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">🎨</div>
                 <h3>多主题配色</h3>
                 <p>提供粉色、紫色、蓝色、绿色、橙色五种主题颜色，随心切换个性界面</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">📂</div>
                 <h3>本地歌单管理</h3>
                 <p>支持创建、导入、导出本地歌单，JSON格式通用，轻松管理你的音乐库</p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">📺</div>
                 <h3>分P切换支持</h3>
@@ -798,30 +785,29 @@
         </div>
     </section>
 
-    <!-- 技术栈 -->
     <section class="section" id="tech">
         <h2 class="section-title">技术栈</h2>
         <p class="section-desc">采用成熟的现代前端技术，保证跨平台兼容性与流畅体验</p>
-        
+
         <div class="tech-stack">
             <div class="tech-item">
                 <div class="tech-name">Electron</div>
                 <div class="tech-version">^20.0.0</div>
                 <div class="tech-desc">桌面应用框架</div>
             </div>
-            
+
             <div class="tech-item">
                 <div class="tech-name">Vue 3</div>
                 <div class="tech-version">^3.5.32</div>
                 <div class="tech-desc">前端框架</div>
             </div>
-            
+
             <div class="tech-item">
                 <div class="tech-name">Vite</div>
                 <div class="tech-version">^8.0.4</div>
                 <div class="tech-desc">构建工具</div>
             </div>
-            
+
             <div class="tech-item">
                 <div class="tech-name">Axios</div>
                 <div class="tech-version">^1.15.2</div>
@@ -830,11 +816,10 @@
         </div>
     </section>
 
-    <!-- 使用指南 -->
     <section class="section" id="guide">
         <h2 class="section-title">快速上手</h2>
         <p class="section-desc">简单几步，开启你的音乐之旅</p>
-        
+
         <div class="guide-grid">
             <div class="guide-item">
                 <div class="guide-number">1</div>
@@ -843,7 +828,7 @@
                     <p>在搜索框输入关键词，回车或点击搜索，点击音乐卡片即可直接播放</p>
                 </div>
             </div>
-            
+
             <div class="guide-item">
                 <div class="guide-number">2</div>
                 <div class="guide-content">
@@ -851,7 +836,7 @@
                     <p>多P视频点击右侧列表按钮，查看所有分P并自由切换播放内容</p>
                 </div>
             </div>
-            
+
             <div class="guide-item">
                 <div class="guide-number">3</div>
                 <div class="guide-content">
@@ -859,7 +844,7 @@
                     <p>侧边栏创建歌单，支持导入导出JSON格式文件，轻松备份与分享</p>
                 </div>
             </div>
-            
+
             <div class="guide-item">
                 <div class="guide-number">4</div>
                 <div class="guide-content">
@@ -867,7 +852,7 @@
                     <p>音乐卡片或歌单中点击下载按钮，可在设置中调整下载音质</p>
                 </div>
             </div>
-            
+
             <div class="guide-item">
                 <div class="guide-number">5</div>
                 <div class="guide-content">
@@ -875,7 +860,7 @@
                     <p>右上角主题按钮切换颜色主题，支持深色/浅色模式自由切换</p>
                 </div>
             </div>
-            
+
             <div class="guide-item">
                 <div class="guide-number">6</div>
                 <div class="guide-content">
@@ -886,31 +871,30 @@
         </div>
     </section>
 
-    <!-- 安装与运行 -->
     <section class="section download-section" id="download">
         <h2 class="section-title">源码运行与构建</h2>
         <p class="section-desc">支持 macOS、Windows、Linux 全平台运行</p>
-        
+
         <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
             <div class="path-label">📦 克隆项目</div>
             <code>git clone https://github.com/Rayson-Liu/pink-music-app.git</code>
         </div>
-        
+
         <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
             <div class="path-label">🔧 安装依赖</div>
             <code>npm install</code>
         </div>
-        
+
         <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
             <div class="path-label">🚀 启动开发服务</div>
             <code>npm run dev</code>
         </div>
-        
+
         <div class="path-card" style="max-width: 800px; margin: 0 auto 2rem; text-align: left;">
             <div class="path-label">🎵 启动 Electron 客户端</div>
             <code>npm run electron:dev</code>
         </div>
-        
+
         <h3 style="margin: 2.5rem 0 1rem;">构建打包</h3>
         <div class="download-paths" style="max-width: 800px; margin: 0 auto;">
             <div class="path-card">
@@ -922,7 +906,7 @@
                 <code>npm run electron:build -- --win</code>
             </div>
         </div>
-        
+
         <h3 style="margin: 2.5rem 0 1rem;">默认下载目录</h3>
         <div class="download-paths" style="max-width: 800px; margin: 0 auto;">
             <div class="path-card">
@@ -940,22 +924,21 @@
         </div>
     </section>
 
-    <!-- 开源仓库 -->
     <section class="section">
         <h2 class="section-title">开源仓库</h2>
         <p class="section-desc">项目完全开源，欢迎 Star 与贡献</p>
-        
+
         <div class="repo-links">
             <a href="https://github.com/Rayson-Liu/pink-music-app" target="_blank" class="repo-card">
-                <div class="repo-icon">🐙</div>
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" class="repo-icon">
                 <div class="repo-info">
                     <h4>GitHub</h4>
                     <span>Rayson-Liu/pink-music-app</span>
                 </div>
             </a>
-            
+
             <a href="https://gitee.com/Rayson-Liu/pink-music-app" target="_blank" class="repo-card">
-                <div class="repo-icon">🏠</div>
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitee/gitee-original.svg" alt="Gitee" class="repo-icon">
                 <div class="repo-info">
                     <h4>Gitee</h4>
                     <span>Rayson/pink-music-app</span>
@@ -963,7 +946,6 @@
             </a>
         </div>
 
-        <!-- 法律声明 -->
         <div class="legal-notice">
             <h4>⚖️ 法律声明与使用限制</h4>
             <ul>
@@ -976,7 +958,6 @@
         </div>
     </section>
 
-    <!-- 下载弹窗 -->
     <div class="modal-overlay" id="downloadModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1005,14 +986,12 @@
         </div>
     </div>
 
-    <!-- 页脚 -->
     <footer>
         <p>💗 Pink Music © 2026 | 基于 <a href="https://github.com/Rayson-Liu/pink-music-app" target="_blank">PolyForm Noncommercial License</a> 开源</p>
         <p style="margin-top: 0.5rem;">非官方项目，与哔哩哔哩无任何官方关联</p>
     </footer>
 
     <script>
-        // 动态获取最新版本号
         const DEFAULT_VERSION = 'v2.1.0';
         const GITHUB_REPO = 'Rayson-Liu/pink-music-app';
 
@@ -1022,24 +1001,20 @@
                 if (!response.ok) throw new Error('请求失败');
                 const data = await response.json();
                 const latestVersion = data.tag_name || DEFAULT_VERSION;
-                // 替换页面所有版本号
+
                 document.querySelectorAll('.current-version').forEach(el => {
                     el.textContent = latestVersion;
                 });
             } catch (err) {
-                // 请求失败保留默认版本，不影响页面使用
                 console.warn('获取最新版本号失败，使用默认版本', err);
             }
         }
 
-        // 页面加载时拉取版本号
         fetchLatestVersion();
 
-        // 主题切换功能
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
-        // 检查本地存储的主题偏好
         const savedTheme = localStorage.getItem('pink-music-theme');
         if (savedTheme === 'dark') {
             body.classList.add('dark');
@@ -1053,7 +1028,6 @@
             localStorage.setItem('pink-music-theme', isDark ? 'dark' : 'light');
         });
 
-        // 下载弹窗控制
         const downloadBtn = document.getElementById('downloadBtn');
         const heroDownloadBtn = document.getElementById('heroDownloadBtn');
         const downloadModal = document.getElementById('downloadModal');
@@ -1073,37 +1047,27 @@
         heroDownloadBtn.addEventListener('click', openModal);
         closeModal.addEventListener('click', closeModalFunc);
 
-        // 点击遮罩关闭弹窗
         downloadModal.addEventListener('click', (e) => {
             if (e.target === downloadModal) {
                 closeModalFunc();
             }
         });
 
-        // ESC键关闭弹窗
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && downloadModal.classList.contains('active')) {
                 closeModalFunc();
             }
         });
 
-        // 导航栏滚动效果
-        let lastScroll = 0;
         const navbar = document.querySelector('.navbar');
 
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
-            
-            if (currentScroll > 50) {
-                navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.05)';
-            } else {
-                navbar.style.boxShadow = 'none';
-            }
-            
-            lastScroll = currentScroll;
+            navbar.style.boxShadow = currentScroll > 50
+                ? '0 4px 20px rgba(0, 0, 0, 0.08)'
+                : 'none';
         });
 
-        // 平滑滚动到锚点
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
