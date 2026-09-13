@@ -46,8 +46,8 @@
     // windows on south face of building drawn via wall; doors:
     set(m, 14, 8, 8); set(m, 15, 8, 8); // classroom
     set(m, 22, 8, 8); set(m, 23, 8, 8); // hallway
-    set(m, 11, 5, 8); set(m, 28, 5, 8); // library from hall
-    set(m, 16, 2, 8); set(m, 23, 2, 8); // rooftop stairs
+    set(m, 11, 5, 5); set(m, 28, 5, 5); // corridor ends (no exterior portal)
+    set(m, 16, 2, 8); set(m, 23, 2, 8); // rooftop stairs (north face)
 
     // gym (east)
     rect(m, 32, 12, 38, 18, 2);
@@ -97,7 +97,7 @@
     // fence border
     for (let x = 0; x < W; x++) { set(m, x, 0, 6); set(m, x, H - 1, 6); }
     for (let y = 0; y < H; y++) { set(m, 0, y, 6); set(m, W - 1, y, 6); }
-    set(m, 18, H - 1, 8); set(m, 19, H - 1, 8); // gate
+    set(m, 18, H - 1, 1); set(m, 19, H - 1, 1); // open gate path (edge is blocked)
 
     return { w: W, h: H, tiles: m, id: "outdoor", name: "校园" };
   }
@@ -140,12 +140,11 @@
       rect(m, 2, y, 6, y, 11);
       rect(m, 11, y, 15, y, 11);
     }
-    // reading tables
+    // carpet first, then tables so furniture is not overwritten
+    rect(m, 7, 3, 10, 10, 22);
     set(m, 8, 4, 12); set(m, 9, 4, 12);
     set(m, 8, 7, 12); set(m, 9, 7, 12);
     set(m, 8, 10, 12); set(m, 9, 10, 12);
-    // carpet center
-    rect(m, 7, 3, 10, 10, 22);
     // windows
     for (let x = 3; x < 15; x += 3) set(m, x, 0, 13);
     // door
@@ -161,8 +160,11 @@
     for (let y = 0; y < H; y++) { set(m, 0, y, 2); set(m, W - 1, y, 2); }
     // windows north
     for (let x = 2; x < W - 2; x += 2) set(m, x, 0, 13);
-    // lockers south
-    for (let x = 2; x < W - 2; x++) set(m, x, H - 2, 15);
+    // lockers south (keep exit columns x=2,3 walkable)
+    for (let x = 2; x < W - 2; x++) {
+      if (x === 2 || x === 3) continue;
+      set(m, x, H - 2, 15);
+    }
     // exit doors
     set(m, 2, H - 1, 8); set(m, 3, H - 1, 8); // outdoor
     set(m, 9, 0, 8); // to classroom
@@ -271,16 +273,16 @@
     outdoor: [
       { x: 14, y: 8, to: "classroom", spawn: [7, 10] },
       { x: 15, y: 8, to: "classroom", spawn: [8, 10] },
-      { x: 22, y: 8, to: "hallway", spawn: [3, 6] },
-      { x: 23, y: 8, to: "hallway", spawn: [4, 6] },
+      { x: 22, y: 8, to: "hallway", spawn: [3, 5] },
+      { x: 23, y: 8, to: "hallway", spawn: [4, 5] },
+      { x: 16, y: 2, to: "rooftop", spawn: [7, 10] },
+      { x: 23, y: 2, to: "rooftop", spawn: [8, 10] },
       { x: 34, y: 18, to: "gym", spawn: [8, 12] },
       { x: 35, y: 18, to: "gym", spawn: [9, 12] },
       { x: 3, y: 18, to: "cafeteria", spawn: [8, 10] },
       { x: 4, y: 18, to: "cafeteria", spawn: [9, 10] },
       { x: 3, y: 7, to: "council", spawn: [5, 8] },
       { x: 34, y: 23, to: "lockers", spawn: [5, 6] },
-      { x: 18, y: 27, to: "outdoor", spawn: [18, 25] },
-      { x: 19, y: 27, to: "outdoor", spawn: [19, 25] },
     ],
     classroom: [
       { x: 7, y: 11, to: "hallway", spawn: [9, 2] },
@@ -291,8 +293,8 @@
       { x: 9, y: 12, to: "hallway", spawn: [17, 2] },
     ],
     hallway: [
-      { x: 2, y: 7, to: "outdoor", spawn: [22, 10] },
-      { x: 3, y: 7, to: "outdoor", spawn: [23, 10] },
+      { x: 2, y: 7, to: "outdoor", spawn: [22, 9] },
+      { x: 3, y: 7, to: "outdoor", spawn: [23, 9] },
       { x: 9, y: 0, to: "classroom", spawn: [7, 10] },
       { x: 16, y: 0, to: "library", spawn: [8, 11] },
       { x: 18, y: 7, to: "rooftop", spawn: [7, 10] },
@@ -310,12 +312,12 @@
       { x: 8, y: 11, to: "hallway", spawn: [18, 6] },
     ],
     council: [
-      { x: 5, y: 9, to: "outdoor", spawn: [3, 9] },
-      { x: 6, y: 9, to: "outdoor", spawn: [4, 9] },
+      { x: 5, y: 9, to: "outdoor", spawn: [3, 8] },
+      { x: 6, y: 9, to: "outdoor", spawn: [4, 8] },
     ],
     lockers: [
-      { x: 5, y: 7, to: "outdoor", spawn: [34, 25] },
-      { x: 6, y: 7, to: "outdoor", spawn: [35, 25] },
+      { x: 5, y: 7, to: "outdoor", spawn: [34, 22] },
+      { x: 6, y: 7, to: "outdoor", spawn: [35, 22] },
     ],
   };
 

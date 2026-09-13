@@ -7,7 +7,7 @@
   /* native CSS-pixel buffer × devicePixelRatio — sharp, not downscaled */
   const MAX_DPR = 2;
 
-  const BLOCKED = new Set([2, 3, 4, 6, 10, 11, 12, 13, 14, 15, 16, 19]);
+  const BLOCKED = new Set([2, 3, 4, 6, 9, 10, 11, 12, 13, 14, 15, 16, 19]);
 
   const state = {
     mode: "title",
@@ -46,6 +46,8 @@
     cafeteria: "食堂",
     council: "学生会",
     lockers: "鞋柜",
+    rooftop: "屋顶",
+    library: "图书室",
   };
 
   /* ---------- tiny SE ---------- */
@@ -525,7 +527,7 @@
       }
       if (!f.ev_sakura_c2 && aff >= 6 && state.day >= 2) {
         f.ev_sakura_c2 = true;
-        return "sakura_courtyard_1";
+        return "sakura_courtyard_2";
       }
     }
     if (id === "nagi") {
@@ -572,7 +574,7 @@
   }
 
   function checkAutoEnding() {
-    if (state.day > 10) {
+    if (state.day > 7) {
       const maxId = Object.keys(state.affection).reduce((a, b) =>
         state.affection[a] >= state.affection[b] ? a : b
       );

@@ -212,6 +212,37 @@ GAME.SCENES = {
       }
     ]
   },
+  sakura_courtyard_2: {
+    bg: "courtyard",
+    lines: [
+      { who: "sakura", text: "又见面啦！我刚刚在数花瓣，猜你会不会来。", char: "sakura" },
+      { who: "me", text: "……数到第几片了？" },
+      { who: "sakura", text: "第一百二十七片！然后你就出现了。嘿嘿，准吧？" },
+      { who: "sakura", text: "那个……下次文化祭，你有空吗？我想和你一起逛。" },
+      {
+        choice: [
+          { text: "「当然，约好了。」", next: "sakura_c2_a", aff: { sakura: 3 } },
+          { text: "「我看看日程再答复你。」", next: "sakura_c2_b", aff: { sakura: 1 } }
+        ]
+      }
+    ]
+  },
+  sakura_c2_a: {
+    bg: "courtyard",
+    lines: [
+      { who: "sakura", text: "真的吗？太好了！我已经在想要穿哪件浴衣了！", char: "sakura" },
+      { who: "", text: "她兴奋地转了个圈，发间落下两瓣樱花。", fx: "aff+sakura" },
+      { next: "explore_resume" }
+    ]
+  },
+  sakura_c2_b: {
+    bg: "courtyard",
+    lines: [
+      { who: "sakura", text: "嗯……也是。学生会那边可能也会找你帮忙。", char: "sakura" },
+      { who: "sakura", text: "不过如果你有空，记得第一个告诉我哦。", fx: "aff+sakura" },
+      { next: "explore_resume" }
+    ]
+  },
   sakura_caf_a: {
     bg: "cafeteria",
     lines: [
