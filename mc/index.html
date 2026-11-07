@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>OpusMC · 离线单机版</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<script>
+  // 音效包开关：默认 false = 使用内置 WebAudio 程序化合成音（无需任何音频文件，零网络请求）。
+  // 若自行放入原版音效包（sounds/sfx/*.m4a，共 4849 个文件），改成 true 即可启用原版音效。
+  // 注意：原版音效文件来自 Minecraft 客户端，公开分发有版权风险，请自行确认权利。
+  window.OPUSMC_SOUND_PACK = false;
+</script>
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000;
+    touch-action: none; overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+  #ui { pointer-events: none; }
+  #textinput { position: absolute; display: none; background: transparent; border: none; outline: none; color: transparent;
+    caret-color: transparent; font-family: monospace; padding: 0 2px; z-index: 5; }
+  #err { position: absolute; left: 10%; top: 30%; width: 80%; color: #fff; font: 18px sans-serif; white-space: pre-wrap; display: none; text-align: center; }
+  #boot { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font: 16px "Microsoft YaHei", sans-serif; background: #ef323d; }
+  #boot b { font-size: 30px; letter-spacing: 2px; margin-bottom: 18px; }
+  #bootbar { width: min(320px, 70vw); height: 10px; border: 2px solid #fff; padding: 2px; box-sizing: content-box; }
+  #bootbar i { display: block; height: 100%; width: 0; background: #fff; }
+  #boottext { margin-top: 10px; font-size: 14px; }
+  #bootnote { position: absolute; bottom: 14px; font-size: 12px; opacity: .85; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<canvas id="ui"></canvas>
+<input id="textinput" type="text" autocomplete="off" spellcheck="false">
+<div id="boot"><b>OpusMC</b><div id="bootbar"><i></i></div><div id="boottext">正在加载… 0%</div><div id="bootnote">离线单机版 · 无需登录 · 无账号 / 联机 / 赞助功能</div></div>
+<script>
+  // 本地加载进度条（原页面的 B站 性能埋点与「不在 iframe 就跳回 B站」逻辑已移除）
+  (function () {
+    var bar = document.querySelector('#bootbar i'), txt = document.getElementById('boottext');
+    var total = 78, got = 0, shown = 0;
+    document.addEventListener('load', function (e) {
+      if (e.target && e.target.tagName === 'SCRIPT' && e.target.src) got++;
+    }, true);
+    (function step() {
+      var b = document.getElementById('boot');
+      if (!b || b.style.display === 'none') return;
+      var want = got < total ? 85 * got / total : 85 + 14 * (1 - Math.exp(-(performance.now() - (step.t || (step.t = performance.now()))) / 4000));
+      shown = Math.max(shown, Math.min(99, want));
+      bar.style.width = shown.toFixed(1) + '%';
+      txt.textContent = (got < total ? '正在加载… ' : '正在准备世界… ') + Math.floor(shown) + '%';
+      setTimeout(step, 100);
+    })();
+  })();
+</script>
+<div id="err"></div>
+<script src="js/assets.js"></script>
+<script src="js/font.js"></script>
+<script src="js/emoji.js"></script>
+<script src="js/texts.js"></script>
+<script src="js/util.js"></script>
+<script src="js/worldgen_data.js"></script>
+<script src="js/worldgen.js"></script>
+<script src="js/blockdata.js"></script>
+<script src="js/itemdata.js"></script>
+<script src="js/recipedata.js"></script>
+<script src="js/blocks.js"></script>
+<script src="js/world.js"></script>
+<script src="js/mesher.js"></script>
+<script src="js/models.js"></script>
+<script src="js/vmodels.js"></script>
+<script src="js/render.js"></script>
+<script src="js/render2.js"></script>
+<script src="js/shaders.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/subtitles.js"></script>
+<script src="js/entity.js"></script>
+<script src="js/mobs2.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/save.js"></script>
+<script src="js/game.js"></script>
+<script src="js/terrain2.js"></script>
+<script src="js/features.js"></script>
+<script src="js/trees.js"></script>
+<script src="js/structures_data.js"></script>
+<script src="js/structgen.js"></script>
+<script src="js/structtypes.js"></script>
+<script src="js/gen_worker.js"></script>
+<script src="js/structures.js"></script>
+<script src="js/nbt.js"></script>
+<script src="js/anvil.js"></script>
+<script src="js/export.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/commands.js"></script>
+<script src="js/controls.js"></script>
+<script src="js/dims.js"></script>
+<script src="js/nether_mobs.js"></script>
+<script src="js/village_mobs.js"></script>
+<script src="js/merchant.js"></script>
+<script src="js/effects.js"></script>
+<script src="js/enchant.js"></script>
+<script src="js/workstations.js"></script>
+<script src="js/equip.js"></script>
+<script src="js/vehicles.js"></script>
+<script src="js/redstone.js"></script>
+<script src="js/itemuse.js"></script>
+<script src="js/entitydata.js"></script>
+<script src="js/etex.js"></script>
+<script src="js/emodel.js"></script>
+<script src="js/vmobs.js"></script>
+<script src="js/mobs_animals.js"></script>
+<script src="js/mobs_water.js"></script>
+<script src="js/mobs_hostile.js"></script>
+<script src="js/mobitems.js"></script>
+<script src="js/spawning.js"></script>
+<script src="js/draw2.js"></script>
+<script src="js/blockents.js"></script>
+<script src="js/decor.js"></script>
+<script src="js/items3.js"></script>
+<script src="js/specials.js"></script>
+<script src="js/raids.js"></script>
+<script src="js/cmdrun.js"></script>
+<script src="js/main.js"></script>
+<script src="js/touch.js"></script>
+<script src="js/perf.js"></script>
+<script src="js/offline.js"></script>
+<script src="js/beacon.js"></script>
+<script src="js/cmdblock.js"></script>
+<script src="js/mobile.js"></script>
+<script src="js/onboard.js"></script>
+<script src="js/extras.js"></script>
+<script src="js/minigame.js"></script>
+<script src="js/panorama_data.js"></script>
+<script src="js/panorama.js"></script>
+<script>
+  (function wait() {
+    if (window.game && window.game.state !== 'boot') document.getElementById('boot').style.display = 'none';
+    else setTimeout(wait, 100);
+  })();
+</script>
+</body>
+</html>
